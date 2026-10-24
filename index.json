@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Fantia（个人订阅）",
+    "key": "fantia_personal",
+    "version": "0.1.1",
+    "minAppVersion": "1.6.0",
+    "fileName": "fantia.js",
+    "url": "https://raw.githubusercontent.com/MQ9Reaper/venera-personal-sources/main/fantia.js",
+    "description": "使用自己的账号阅读 Fantia图片内容；实验版。"
+  },
+  {
+    "name": "FANBOX（个人订阅）",
+    "key": "fanbox_personal",
+    "version": "0.1.1",
+    "minAppVersion": "1.6.0",
+    "fileName": "fanbox.js",
+    "url": "https://raw.githubusercontent.com/MQ9Reaper/venera-personal-sources/main/fanbox.js",
+    "description": "使用自己的账号阅读 pixiv FANBOX图片内容；实验版。"
+  }
+]

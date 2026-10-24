@@ -1,0 +1,11 @@
+{
+  "name": "venera-personal-sources",
+  "version": "0.1.1",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.12"
+  }
+}

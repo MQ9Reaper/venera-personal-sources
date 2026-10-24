@@ -1,0 +1,41 @@
+{
+  "post": {
+    "id": 1234567,
+    "title": "合成测试帖子",
+    "posted_at": "2026-10-24T12:00:00+09:00",
+    "fanclub": {
+      "id": 1234,
+      "creator_name": "example_creator",
+      "fanclub_name": "合成测试作者"
+    },
+    "post_contents": [
+      {
+        "id": 42,
+        "title": "测试图集",
+        "category": "photo_gallery",
+        "visible_status": "visible",
+        "post_content_photos": [
+          {
+            "id": 1,
+            "url": {
+              "original": "https://cc.fantia.jp/uploads/test/page-1.png?Signature=example"
+            }
+          },
+          {
+            "id": 2,
+            "url": {
+              "original": "https://cc.fantia.jp/uploads/test/page-2.png?Signature=example"
+            }
+          }
+        ]
+      },
+      {
+        "id": 7554168,
+        "title": "不可读测试章节",
+        "category": "photo_gallery",
+        "visible_status": "catchable",
+        "post_content_photos": []
+      }
+    ]
+  }
+}

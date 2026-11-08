@@ -3,7 +3,7 @@
 class Fantia extends ComicSource {
     name = "Fantia（个人订阅）";
     key = "fantia_personal";
-    version = "0.1.1";
+    version = "0.1.2";
     minAppVersion = "1.6.0";
     url = "https://raw.githubusercontent.com/MQ9Reaper/venera-personal-sources/main/fantia.js";
     _csrf = null;
@@ -279,6 +279,41 @@ class Fantia extends ComicSource {
         return Array.from(new Set(images));
     }
 
+
+    // Prime treats any uppercase T (even "Thu"/"Tue") as an ISO marker.
+    // Parse explicitly: QuickJS Date.parse support for RFC dates varies.
+    normalizeTime(value) {
+        if (typeof value !== "string" || !value.trim()) return null;
+        const text = value.trim();
+        let year, month, day, hour, minute, second, fraction = "", zone = "";
+        const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:[Tt ](\d{2}):(\d{2})(?::(\d{2})(\.\d{1,9})?)?(Z|[+-]\d{2}:?\d{2})?)?$/i);
+        if (iso) {
+            year = Number(iso[1]); month = Number(iso[2]); day = Number(iso[3]);
+            hour = iso[4] === undefined ? null : Number(iso[4]);
+            minute = Number(iso[5] || 0); second = Number(iso[6] || 0);
+            fraction = (iso[7] || "").slice(0, 7); zone = iso[8] || "";
+        } else {
+            const rfc = text.match(/^(?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+)?(\d{1,2})\s+([a-z]{3})\s+(\d{4})\s+(\d{2}):(\d{2})(?::(\d{2}))?\s+(Z|UTC|GMT|[+-]\d{2}:?\d{2})$/i);
+            if (!rfc) return null;
+            const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+            year = Number(rfc[3]); month = months.indexOf(rfc[2].toLowerCase()) + 1; day = Number(rfc[1]);
+            hour = Number(rfc[4]); minute = Number(rfc[5]); second = Number(rfc[6] || 0); zone = rfc[7];
+        }
+        const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+        const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        if (year < 1 || month < 1 || month > 12 || day < 1 || day > days[month - 1]) return null;
+        if (hour !== null && (hour > 23 || minute > 59 || second > 59)) return null;
+        if (/^(?:Z|UTC|GMT)$/i.test(zone)) zone = "Z";
+        else if (zone) {
+            const offset = zone.match(/^([+-])(\d{2}):?(\d{2})$/);
+            if (!offset || Number(offset[2]) > 23 || Number(offset[3]) > 59) return null;
+            zone = offset[1] + offset[2] + ":" + offset[3];
+        }
+        const pad = number => String(number).padStart(2, "0");
+        const date = String(year).padStart(4, "0") + "-" + pad(month) + "-" + pad(day);
+        return hour === null ? date : date + "T" + pad(hour) + ":" + pad(minute) + ":" + pad(second) + fraction + zone;
+    }
+
     details(post) {
         const summary = this.summary(post), chapters = {}, notes = [];
         if (this.image(post.thumb) || this.image(post.thumb_micro)) chapters.cover = "公开封面／预览";
@@ -291,6 +326,8 @@ class Fantia extends ComicSource {
             if (this.contentImages(content).length) chapters["content_" + content.id] = label;
             else notes.push("[文字或附件，请打开原网页] " + label);
         }
+        const uploadTime = this.normalizeTime(post.posted_at);
+        const updateTime = this.normalizeTime(post.converted_at) || uploadTime;
         let description = String(post.comment || "");
         if (notes.length) description += "\n\n" + notes.join("\n");
         if (!Object.keys(chapters).length) description += "\n\n该帖子没有当前账号可读取的图片，请打开原网页查看。";
@@ -298,7 +335,7 @@ class Fantia extends ComicSource {
             title: summary.title, subtitle: summary.subtitle, cover: summary.cover,
             description: description, chapters: chapters,
             tags: { "作者": summary.subtitle ? [summary.subtitle] : [], "标签": summary.tags },
-            uploadTime: post.posted_at || "", updateTime: post.converted_at || post.posted_at || "",
+            uploadTime: uploadTime, updateTime: updateTime,
             url: "https://fantia.jp/posts/" + post.id
         };
     }

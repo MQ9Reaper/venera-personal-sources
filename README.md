@@ -7,7 +7,11 @@
 | Fantia | `_session_id` Cookie | [Fantia 安装与使用](docs/fantia.md) |
 | FANBOX | `FANBOXSESSID` Cookie；实验性 App 内网页登录 | [FANBOX 安装与使用](docs/fanbox.md) |
 
-当前为 **0.1.1 实验版**。帖子作为漫画，图片相册或正文作为章节。ZIP、PDF、视频及外部网盘附件请打开原网页查看。
+当前版本：**Fantia 0.1.2 / FANBOX 0.1.1（实验版）**。帖子作为漫画，图片相册或正文作为章节。ZIP、PDF、视频及外部网盘附件请打开原网页查看。
+
+## 最近修复
+
+Fantia 0.1.2 修复 Venera Prime 打开部分帖子时报 `FormatException: Invalid date format` 的问题：将 Fantia 返回的 RFC 格式日期统一为 ISO 格式；无法识别的日期不再传给 App，避免整个详情页加载失败。源 ID 和登录方式保持不变，直接在漫画源中更新即可，无需卸载源。
 
 ## 安装
 
